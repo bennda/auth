@@ -1,18 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-
-namespace DBN.Auth.Auth0;
-
-public interface IAuthService {
-    Task<TokenResponse?> GetToken(string domain, Dictionary<string, string> values);
-    Task<TokenResponse?> GetTokenForClientCredentials(string domain, string audience, NetworkCredential client);
-    Task<TokenResponse?> GetTokenForPassword(string domain, string audience, NetworkCredential client, NetworkCredential user, string scope);
-    Task<TokenResponse?> GetTokenForAuthorizationCode(string domain, NetworkCredential client, string code, string redirectUri);
-    Task<TokenResponse?> GetTokenForRefreshToken(string domain, NetworkCredential client, string refreshToken);
-}
-
-public class Auth0Service : IAuthService
+﻿internal class Auth0Service : IAuthService
 { 
     private readonly HttpClient _httpClient;
     public Auth0Service(HttpClient client) {

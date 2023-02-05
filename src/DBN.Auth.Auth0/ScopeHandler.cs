@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿namespace DBN.Auth.Auth0;
 
-namespace DBN.Auth.Auth0;
-
-public class HasScopeRequirement : IAuthorizationRequirement
+internal class HasScopeRequirement : IAuthorizationRequirement
 {
     public string Issuer { get; }
     public string Scope { get; }
@@ -14,7 +12,7 @@ public class HasScopeRequirement : IAuthorizationRequirement
     }
 }
 
-public class HasScopeHandler : AuthorizationHandler<HasScopeRequirement>
+internal class HasScopeHandler : AuthorizationHandler<HasScopeRequirement>
 {
     protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, HasScopeRequirement requirement)
     {

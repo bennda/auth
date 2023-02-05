@@ -1,15 +1,4 @@
-﻿using Auth0.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using System.Net;
-using System.Text.Json;
-
-namespace DBN.Auth.Auth0;
+﻿namespace DBN.Auth.Auth0;
 
 public static class Auth0Extensions
 {
@@ -165,7 +154,7 @@ public static class Auth0Extensions
                     return Results.BadRequest("grant_type invalid");
             }
 
-            return response.IsSuccessful
+            return response != null && response.IsSuccessful
                 ? Results.Ok(response.Token)
                 : Results.Unauthorized();
         };

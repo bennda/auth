@@ -1,9 +1,4 @@
-﻿using System.ComponentModel;
-using System.Net;
-using System.Runtime.Serialization;
-using System.Text.Json.Serialization;
-
-namespace DBN.Auth.Auth0;
+﻿namespace DBN.Auth.Auth0;
 
 public class TokenResponse
 {

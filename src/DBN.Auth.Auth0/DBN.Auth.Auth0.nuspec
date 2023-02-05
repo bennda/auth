@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>DBN.Auth.Auth0</id>
+    <version>1.0.0</version>
+    <title>DBN.Auth.Auth0</title>
+    <authors>Daniel Bennett</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <readme>nuget.md</readme>
+    <projectUrl>https://github.com/dnbnt/auth</projectUrl>
+    <description>.NET library for easy Auth0 integration</description>
+    <releaseNotes>see https://github.com/dnbnt/auth</releaseNotes>
+    <copyright>Copyright 2023</copyright>
+    <tags>auth, auth0, authentication, authorization, token</tags>
+    <dependencies>
+      <group targetFramework="net7.0">
+        <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.2" exclude="Build,Analyzers" />
+        <dependency id="Auth0.AspNetCore.Authentication" version="1.1.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="nuget.md" target ="" />
+    <file src="bin\release\net7.0\DBN.Auth.Auth0.dll" target="lib\net7.0" />
+  </files>
+</package>
