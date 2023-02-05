@@ -1,0 +1,65 @@
+﻿@model TokenResponse
+
+<table cellpadding="0" cellspacing="0" style="table-layout:fixed; width:100%">
+    <tr><td style="width:20%; height:0"></td></tr>
+    @if (!string.IsNullOrEmpty(Model.Token.AccessToken))
+    {
+        <tr>
+            <td>@Html.LabelFor(m => m.Token.AccessToken)</td>
+            <td>
+                @Html.TextAreaFor(m => m.Token.AccessToken)
+            </td>
+        </tr>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Token.RefreshToken))
+    {
+        <tr>
+            <td>@Html.LabelFor(m => m.Token.RefreshToken)</td>
+            <td>
+                @Html.TextAreaFor(m => m.Token.RefreshToken)
+            </td>
+        </tr>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Token.IdToken))
+    {
+        <tr>
+            <td>@Html.LabelFor(m => m.Token.IdToken)</td>
+            <td>
+                @Html.TextAreaFor(m => m.Token.IdToken)
+            </td>
+        </tr>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Token.TokenType))
+    {
+        <tr>
+            <td>@Html.LabelFor(m => m.Token.TokenType)</td>
+            <td>
+                @Html.TextBoxFor(m => m.Token.TokenType)
+            </td>
+        </tr>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.Token.Scope))
+    {
+        <tr>
+            <td>@Html.LabelFor(m => m.Token.Scope)</td>
+            <td>
+                @Html.TextBoxFor(m => m.Token.Scope)
+            </td>
+        </tr>
+    }
+
+    @if (Model.Token.ExpiresIn != null)
+    {
+        <tr>
+            <td>@Html.LabelFor(m => m.Token.ExpiresIn)</td>
+            <td>
+                @Html.TextBoxFor(m => m.Token.ExpiresIn)
+            </td>
+        </tr>
+    }
+
+</table>

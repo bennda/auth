@@ -1,0 +1,33 @@
+﻿<!DOCTYPE HTML>
+
+<html>
+<head>
+    <title>Token Generator</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="/css/media.css" />
+</head>
+<body class="is-preload">
+    <div id="wrapper">
+        <div id="main">
+            <div class="inner">
+                <header id="header">
+                    <a class="logo" asp-area="" asp-controller="Token" asp-action="Index"><strong>Authorization Token Helper</strong> for Auth0</a>
+                </header>
+
+                @RenderBody()
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="lib/jquery.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="/css/site.js"></script>
+
+</body>
+</html>

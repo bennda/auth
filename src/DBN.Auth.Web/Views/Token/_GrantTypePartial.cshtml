@@ -1,0 +1,39 @@
+﻿@model TokenViewModel
+
+@using (Html.BeginForm("Index", "Token", FormMethod.Get))
+{
+    <tr>
+        <td style="width:20%">@Html.LabelFor(m => m.GrantType)</td>
+        <td>
+            @Html.DropDownListFor(m => m.GrantType, new List<SelectListItem> {
+        new SelectListItem {Text="", Value=null},
+        new SelectListItem {Text="client_credentials", Value="client_credentials"},
+        new SelectListItem {Text="password", Value="password"},
+        new SelectListItem {Text="authorization_code", Value="authorization_code"},
+        new SelectListItem {Text="refresh_token", Value="refresh_token"}},
+        new { onchange = "submit()" })
+        </td>
+    </tr>
+}
+
+@if (Model.GrantType != null)
+{
+    <tr>
+        <td>@Html.LabelFor(m => m.Domain)</td>
+        <td>
+            @Html.TextBoxFor(m => m.Domain)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.ClientId)</td>
+        <td>
+            @Html.TextBoxFor(m => m.ClientId)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.ClientSecret)</td>
+        <td>
+            @Html.TextBoxFor(m => m.ClientSecret)
+        </td>
+    </tr>
+}

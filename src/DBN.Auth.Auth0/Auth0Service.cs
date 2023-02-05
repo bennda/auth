@@ -1,4 +1,4 @@
-﻿internal class Auth0Service : IAuthService
+﻿public class Auth0Service : IAuthService
 { 
     private readonly HttpClient _httpClient;
     public Auth0Service(HttpClient client) {

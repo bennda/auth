@@ -1,0 +1,43 @@
+﻿@model TokenViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<section>
+    <div class="content">
+        <header class="major">
+            <h3>Token Request [Auth0]</h3>
+        </header>
+
+        <table cellpadding="0" cellspacing="0" style="table-layout:fixed; width:100%">
+            <tr><td style="width:20%; height:0"></td></tr>
+            <partial name="_GrantTypePartial" model="@Model" />
+
+            @switch (Model.GrantType)
+            {
+                case GrantType.ClientCredentials:
+                    <partial name="_GrantTypeClientCredentialsPartial" model="@Model as TokenViewModelClientCredentials" />
+                    break;
+                case GrantType.Password:
+                    <partial name="_GrantTypePasswordPartial" model="@Model as TokenViewModelPassword" />
+                    break;
+                case GrantType.RefreshToken:
+                    <partial name="_GrantTypeRefreshTokenPartial" model="@Model as TokenViewModelRefreshToken" />
+                    break;
+                case GrantType.AuthenticationCode:
+                    <partial name="_GrantTypeAuthenticationCodePartial" model="@Model as TokenViewModelAuthorizationCode" />
+                    break;
+                default:
+                    break;
+            }
+        </table>
+
+        @if (Model.TokenResponse != null)
+        {
+            <header class="major">
+                <h3>Token Response [Auth0]</h3>
+            </header>
+            <partial name="_TokenResponsePartial" model="@Model.TokenResponse" />
+        }
+
+    </div>
+</section>
