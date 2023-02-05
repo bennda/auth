@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>DBN.Auth.Auth0</id>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <title>DBN.Auth.Auth0</title>
     <authors>Daniel Bennett</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -17,7 +17,7 @@
     <dependencies>
       <group targetFramework="net7.0">
         <dependency id="Microsoft.AspNetCore.Authentication.JwtBearer" version="7.0.2" exclude="Build,Analyzers" />
-        <dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.2" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.Extensions.DependencyInjection" version="7.0.0" exclude="Build,Analyzers" />
         <dependency id="Auth0.AspNetCore.Authentication" version="1.1.0" exclude="Build,Analyzers" />
       </group>
     </dependencies>
