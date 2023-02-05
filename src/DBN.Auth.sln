@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBN.Auth.Auth0", "DBN.Auth.Auth0\DBN.Auth.Auth0.csproj", "{89DA6889-6EA6-455E-97CD-5ECC093DCA03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBN.Auth.WebApi", "DBN.Auth.WebApi\DBN.Auth.WebApi.csproj", "{53C21214-3CC2-4E40-BB83-1805B9BE56D6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89DA6889-6EA6-455E-97CD-5ECC093DCA03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DA6889-6EA6-455E-97CD-5ECC093DCA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DA6889-6EA6-455E-97CD-5ECC093DCA03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DA6889-6EA6-455E-97CD-5ECC093DCA03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53C21214-3CC2-4E40-BB83-1805B9BE56D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53C21214-3CC2-4E40-BB83-1805B9BE56D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53C21214-3CC2-4E40-BB83-1805B9BE56D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53C21214-3CC2-4E40-BB83-1805B9BE56D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A8E5320C-5EEA-481B-8A66-E5B17542202D}
+	EndGlobalSection
+EndGlobal
