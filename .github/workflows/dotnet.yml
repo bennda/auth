@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    if: github.event_name != 'workflow_management'
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -23,7 +23,7 @@ jobs:
       run: dotnet build --no-restore -c release src/DBN.Auth.sln
       
   publish:
-    if: github.event_name == 'workflow_management'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
