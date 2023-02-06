@@ -1,4 +1,4 @@
-name: Build Auth
+name: Build DBN.Auth
 
 on:
   push:
