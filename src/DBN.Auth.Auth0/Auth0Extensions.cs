@@ -1,4 +1,7 @@
-﻿namespace DBN.Auth.Auth0;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
+namespace DBN.Auth.Auth0;
 
 public static class Auth0Extensions
 {
@@ -27,18 +30,28 @@ public static class Auth0Extensions
         return services;
     }
 
-    public static IServiceCollection AddAuthApp(this IServiceCollection services, string domain, string clientId, string callbackPath, string callbackHost)
+    public static IServiceCollection AddAuthApp(this IServiceCollection services, string domain, string clientId, string scope, string callbackPath, string callbackHost,
+        string[] permissionRoles)
     {   
         services.AddAuth0WebAppAuthentication(options =>
         {
             options.Domain = domain;
             options.ClientId = clientId;
             options.CallbackPath = callbackPath;
+            options.Scope = scope;
 
             if (!string.IsNullOrEmpty(callbackHost))
             {
                 options.OpenIdConnectEvents = new OpenIdConnectEvents
                 {
+                    OnTokenValidated = (context) => {
+                        foreach (var scope in context.Options.Scope.Where(p => permissionRoles.Contains(p))) {
+                            (context.Principal?.Identity as ClaimsIdentity)?.AddClaim(new Claim(ClaimTypes.Role.ToString(), scope));
+                        }
+                        
+                        return Task.CompletedTask;
+                    },
+
                     OnRedirectToIdentityProvider = context => {
                         context.ProtocolMessage.RedirectUri = $"{callbackHost}{callbackPath}";
                         return Task.FromResult(0);
@@ -50,10 +63,19 @@ public static class Auth0Extensions
         return services;
     }
 
-    public static IServiceCollection AddAuth(this IServiceCollection services, string domain, string audience, string scope, string clientId, string callbackPath, string callbackHost)
+    public static IServiceCollection AddAuth(this IServiceCollection services, string domain, string audience, string scope, string clientId, string callbackPath, string callbackHost, string[] permissionRoles)
     {
-        services.AddAuthApi(domain, audience);
-        services.AddAuthApp(domain, clientId, callbackPath, callbackHost);
+        services.AddAuthApi(
+            domain: domain,
+            audience: audience);
+
+        services.AddAuthApp(
+            domain: domain,
+            clientId: clientId,
+            scope: scope,
+            callbackPath: callbackPath,
+            callbackHost: callbackHost,
+            permissionRoles: permissionRoles);
         
         return services;
     }
