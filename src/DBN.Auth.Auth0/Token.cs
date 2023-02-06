@@ -8,6 +8,18 @@ public class TokenResponse
     public HttpStatusCode? StatusCode { get; set; }
 }
 
+public enum TokenGrantType
+{
+    [JsonPropertyName("client_credentials")]
+    ClientCredentials,
+    [JsonPropertyName("password")]
+    Password,
+    [JsonPropertyName("authorization_code")]
+    AuthorizationCode,
+    [JsonPropertyName("refresh_token")]
+    RefreshToken
+}
+
 public class Token
 {
     [DisplayName("access_token")]

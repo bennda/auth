@@ -1,11 +1,28 @@
-﻿public class Auth0Service : IAuthService
+﻿public class Auth0TokenService : ITokenService
 { 
     private readonly HttpClient _httpClient;
-    public Auth0Service(HttpClient client) {
+    public Auth0TokenService(HttpClient client) {
         _httpClient = client;
     }
 
-    public async Task<TokenResponse?> GetToken(string domain, Dictionary<string, string> values) {
+    public async Task<TokenResponse?> GetToken(TokenParameters parameters)
+    {
+        switch (parameters.GrantType)
+        {
+            case TokenGrantType.ClientCredentials:
+                return await GetTokenForClientCredentials(parameters.Domain, parameters.Audience, parameters.Client);
+            case TokenGrantType.Password:
+                return await GetTokenForPassword(parameters.Domain, parameters.Audience, parameters.Client, parameters.User, parameters.Scope);
+            case TokenGrantType.AuthorizationCode:
+                return await GetTokenForAuthorizationCode(parameters.Domain, parameters.Client, parameters.Code, parameters.RedirectUri);
+            case TokenGrantType.RefreshToken:
+                return await GetTokenForRefreshToken(parameters.Domain, parameters.Client, parameters.RefreshToken);
+            default:
+                return null;
+        }
+    }
+
+    private async Task<TokenResponse?> GetToken(string domain, Dictionary<string, string> values) {
         var url = $"https://{domain}/oauth/token";
         var httpResponseMessage = await _httpClient.PostAsJsonAsync(url, values);
 
@@ -26,7 +43,7 @@
         };
     }
 
-    public async Task<TokenResponse?> GetTokenForClientCredentials(string domain, string audience, NetworkCredential client)
+    private async Task<TokenResponse?> GetTokenForClientCredentials(string domain, string audience, NetworkCredential client)
     {
         return await GetToken(domain, new Dictionary<string, string> {
             {"grant_type", $"client_credentials" },
@@ -36,7 +53,7 @@
         });
     }
 
-    public async Task<TokenResponse?> GetTokenForPassword(string domain, string audience, NetworkCredential client, NetworkCredential user, string scope)
+    private async Task<TokenResponse?> GetTokenForPassword(string domain, string audience, NetworkCredential client, NetworkCredential user, string scope)
     {
         return await GetToken(domain, new Dictionary<string, string> {
             {"grant_type", $"password" },
@@ -49,7 +66,7 @@
         });
     }
 
-    public async Task<TokenResponse?> GetTokenForAuthorizationCode(string domain, NetworkCredential client, string code, string redirectUri)
+    private async Task<TokenResponse?> GetTokenForAuthorizationCode(string domain, NetworkCredential client, string code, string redirectUri)
     {
         return await GetToken(domain, new Dictionary<string, string> {
             {"grant_type", $"authorization_code" },
@@ -60,7 +77,7 @@
         });
     }
 
-    public async Task<TokenResponse?> GetTokenForRefreshToken(string domain, NetworkCredential client, string refreshToken)
+    private async Task<TokenResponse?> GetTokenForRefreshToken(string domain, NetworkCredential client, string refreshToken)
     {
         return await GetToken(domain, new Dictionary<string, string> {
             {"grant_type", $"refresh_token" },
@@ -68,5 +85,10 @@
             {"client_secret", $"{client.Password}" },
             {"refresh_token", $"{refreshToken}" }
         });
+    }
+
+    private async Task<TokenResponse?> GetManagementToken(string domain, NetworkCredential client)
+    {
+        return await GetTokenForClientCredentials(domain, $"https://{domain}/api/v2/", client);
     }
 }

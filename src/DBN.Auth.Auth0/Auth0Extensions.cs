@@ -1,7 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-
-namespace DBN.Auth.Auth0;
+﻿namespace DBN.Auth.Auth0;
 
 public static class Auth0Extensions
 {
@@ -26,7 +23,7 @@ public static class Auth0Extensions
         });
 
         services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
-        services.AddHttpClient<IAuthService, Auth0Service>();
+        services.AddHttpClient<ITokenService, Auth0TokenService>();
         return services;
     }
 
@@ -82,7 +79,7 @@ public static class Auth0Extensions
 
     public static IApplicationBuilder UseAuthApi(this WebApplication app, string auth0Domain, string auth0Audience, NetworkCredential client, string route = "/token")
     {
-        Delegate handler = async (HttpRequest request, IAuthService authService) =>
+        Delegate handler = async (HttpRequest request, ITokenService authService) =>
         {
             Dictionary<string, string?>? content = null;
 
@@ -116,7 +113,10 @@ public static class Auth0Extensions
                 {
                     return Results.BadRequest();
                 }
-                response = await authService.GetTokenForClientCredentials($"{domain}", $"{audience}", new NetworkCredential(clientId, clientSecret, domain));
+                response = await authService.GetToken(TokenParameters.ForClientCredentials(
+                    domain: $"{domain}", 
+                    audience: $"{audience}", 
+                    client: new NetworkCredential(clientId, clientSecret, domain)));
             }
 
             // check request types
@@ -151,7 +151,14 @@ public static class Auth0Extensions
                         return Results.BadRequest();
                     }
                     var scope = content.GetValueOrDefault("scope", "openId");
-                    response = await authService.GetTokenForPassword($"{domain}", $"{audience}", new NetworkCredential(clientId, clientSecret, domain), new NetworkCredential(username, password, domain), $"{scope}");
+                    response = await authService.GetToken(TokenParameters.ForPassword(
+                        domain: $"{domain}",
+                        audience: $"{audience}",
+                        client: new NetworkCredential(clientId, clientSecret, domain),
+                        user: new NetworkCredential(username, password, domain),
+                        scope: $"{scope}"
+                        ));
+                    
                     break;
                 case "refresh_token":
                     var refreshToken = content.GetValueOrDefault("refresh_token");
@@ -159,7 +166,10 @@ public static class Auth0Extensions
                     {
                         return Results.BadRequest();
                     }
-                    response = await authService.GetTokenForRefreshToken($"{domain}", new NetworkCredential(clientId, clientSecret, domain), refreshToken);
+                    response = await authService.GetToken(TokenParameters.ForRefreshToken(
+                        domain: $"{domain}",
+                        client: new NetworkCredential(clientId, clientSecret, domain),
+                        refreshToken: refreshToken));
                     break;
                 case "authorization_code":
                     var code = content.GetValueOrDefault("code");
@@ -168,7 +178,11 @@ public static class Auth0Extensions
                     {
                         return Results.BadRequest();
                     }
-                    response = await authService.GetTokenForAuthorizationCode($"{domain}", new NetworkCredential(clientId, clientSecret, domain), code, redirectUri);
+                    response = await authService.GetToken(TokenParameters.ForAuthorizationCode(
+                        domain: $"{domain}", 
+                        client: new NetworkCredential(clientId, clientSecret, domain), 
+                        code: code, 
+                        redirectUri: redirectUri));
                     break;
                 case "client_credentials":
                     break;

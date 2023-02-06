@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>DBN.Auth.Auth0</id>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <title>DBN.Auth.Auth0</title>
     <authors>Daniel Bennett</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

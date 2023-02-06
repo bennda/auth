@@ -2,11 +2,11 @@
 
 public class TokenController : Controller
 {
-    private readonly IAuthService _authService;
+    private readonly ITokenService _authService;
 
     public TokenController(IHttpClientFactory httpClientFactory)
     {
-        _authService = new Auth0Service(httpClientFactory.CreateClient());
+        _authService = new Auth0TokenService(httpClientFactory.CreateClient());
     }
 
     [HttpGet]
@@ -38,10 +38,10 @@ public class TokenController : Controller
     [HttpPost]
     public async Task<IActionResult> ClientCredentials(TokenViewModelClientCredentials viewModel)
     {
-        viewModel.TokenResponse = await _authService.GetTokenForClientCredentials(
+        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForClientCredentials(
             domain: $"{viewModel.Domain}",
             audience: $"{viewModel.Audience}",
-            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret));
+            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret)));
 
         return View("Index", viewModel);
     }
@@ -49,12 +49,12 @@ public class TokenController : Controller
     [HttpPost]
     public async Task<IActionResult> Password(TokenViewModelPassword viewModel)
     {
-        viewModel.TokenResponse = await _authService.GetTokenForPassword(
+        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForPassword(
             domain: $"{viewModel.Domain}",
             audience: $"{viewModel.Audience}",
             user: new System.Net.NetworkCredential(viewModel.Username, viewModel.Password),
             client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret),
-            scope: $"{viewModel.Scope}");
+            scope: $"{viewModel.Scope}"));
 
         return View("Index", viewModel);
     }
@@ -62,10 +62,10 @@ public class TokenController : Controller
     [HttpPost]
     public async Task<IActionResult> RefreshToken(TokenViewModelRefreshToken viewModel)
     {
-        viewModel.TokenResponse = await _authService.GetTokenForRefreshToken(
+        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForRefreshToken(
             domain: $"{viewModel.Domain}",
             refreshToken: $"{viewModel.RefreshToken}",
-            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret));
+            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret)));
 
         return View("Index", viewModel);
     }
@@ -73,13 +73,11 @@ public class TokenController : Controller
     [HttpPost]
     public async Task<IActionResult> AuthorizationCode(TokenViewModelAuthorizationCode viewModel)
     {
-        viewModel.TokenResponse = await _authService.GetTokenForAuthorizationCode(
+        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForAuthorizationCode(
             domain: $"{viewModel.Domain}",
-
             client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret),
             code: $"{viewModel.Code}",
-            redirectUri: $"{viewModel.RedirectUri}"
-            );
+            redirectUri: $"{viewModel.RedirectUri}"));
 
         return View("Index", viewModel);
     }
