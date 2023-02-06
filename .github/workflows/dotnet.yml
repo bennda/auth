@@ -34,7 +34,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore src/DBN.Auth.sln
     - name: Build package
-      run: dotnet pack src/DBN.Auth.Auth0/DBN.Auth.Auth0.csproj -c release -p:NuspecFile=src/DBN.Auth.Auth0/DBN.Auth.Auth0.nuspec
+      run: dotnet pack src/DBN.Auth.Auth0/DBN.Auth.Auth0.csproj -c release -p:NuspecFile=DBN.Auth.Auth0.nuspec
     - name: Publish package
       run: dotnet nuget push $(ls src/DBN.Auth.Auth0/bin/release/DBN.Auth.Auth0*.nupkg) -k ${{ secrets.NUGET_KEY }}
     
