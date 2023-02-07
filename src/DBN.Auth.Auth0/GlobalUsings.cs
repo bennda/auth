@@ -13,4 +13,6 @@ global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.IdentityModel.Tokens;
 global using Auth0.AspNetCore.Authentication;
-global using DBN.Auth.Auth0;
+global using DBN.Auth.Auth0.Models;
+global using DBN.Auth.Auth0.Handlers;
+global using DBN.Auth.Auth0.Services;

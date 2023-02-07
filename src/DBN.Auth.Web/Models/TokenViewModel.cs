@@ -1,24 +1,13 @@
+using DBN.Auth.Auth0.Models;
+
 namespace DBN.Auth.Web.Models;
-
-public enum GrantType
-{
-    [JsonPropertyName("client_credentials")]
-    ClientCredentials,
-    [JsonPropertyName("password")]
-    Password,
-    [JsonPropertyName("authentication_code")]
-    AuthenticationCode,
-    [JsonPropertyName("refresh_token")]
-    RefreshToken
-}
-
 
 public class TokenViewModel
 {
-    
+
     [Required]
     [DisplayName("grant_type")]
-    public GrantType? GrantType { get; set; }
+    public TokenGrantType? GrantType { get; set; }
 
     [Required]
     [DisplayName("domain")]
@@ -43,8 +32,9 @@ public class TokenViewModelClientCredentials : TokenViewModel
     [DisplayName("audience")]
     public string? Audience { get; set; }
 
-    public TokenViewModelClientCredentials() {
-        GrantType = Models.GrantType.ClientCredentials;
+    public TokenViewModelClientCredentials()
+    {
+        GrantType = TokenGrantType.ClientCredentials;
     }
 }
 
@@ -66,8 +56,9 @@ public class TokenViewModelPassword : TokenViewModel
     [DisplayName("scope")]
     public string? Scope { get; set; }
 
-    public TokenViewModelPassword() {
-        GrantType = Models.GrantType.Password;
+    public TokenViewModelPassword()
+    {
+        GrantType = TokenGrantType.Password;
     }
 }
 
@@ -77,8 +68,9 @@ public class TokenViewModelRefreshToken : TokenViewModel
     [DisplayName("refresh_token")]
     public string? RefreshToken { get; set; }
 
-    public TokenViewModelRefreshToken() {
-        GrantType = Models.GrantType.RefreshToken;
+    public TokenViewModelRefreshToken()
+    {
+        GrantType = TokenGrantType.RefreshToken;
     }
 }
 
@@ -92,7 +84,8 @@ public class TokenViewModelAuthorizationCode : TokenViewModel
     [DisplayName("code")]
     public string? Code { get; set; }
 
-    public TokenViewModelAuthorizationCode() {
-        GrantType = Models.GrantType.AuthenticationCode;
+    public TokenViewModelAuthorizationCode()
+    {
+        GrantType = TokenGrantType.AuthorizationCode;
     }
 }

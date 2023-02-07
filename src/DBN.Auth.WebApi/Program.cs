@@ -1,5 +1,5 @@
-using DBN.Auth.Auth0;
 using System.Net;
+using DBN.Auth.Auth0;
 
 var builder = WebApplication.CreateBuilder(args);
 

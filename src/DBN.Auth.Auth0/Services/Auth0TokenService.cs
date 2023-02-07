@@ -1,7 +1,10 @@
-﻿public class Auth0TokenService : ITokenService
-{ 
+﻿namespace DBN.Auth.Auth0.Services;
+
+public class Auth0TokenService : ITokenService
+{
     private readonly HttpClient _httpClient;
-    public Auth0TokenService(HttpClient client) {
+    public Auth0TokenService(HttpClient client)
+    {
         _httpClient = client;
     }
 
@@ -22,7 +25,8 @@
         }
     }
 
-    private async Task<TokenResponse?> GetToken(string domain, Dictionary<string, string> values) {
+    private async Task<TokenResponse?> GetToken(string domain, Dictionary<string, string> values)
+    {
         var url = $"https://{domain}/oauth/token";
         var httpResponseMessage = await _httpClient.PostAsJsonAsync(url, values);
 
@@ -35,7 +39,8 @@
             });
         }
 
-        return new TokenResponse {
+        return new TokenResponse
+        {
             IsSuccessful = httpResponseMessage.IsSuccessStatusCode,
             StatusCode = httpResponseMessage.StatusCode,
             Token = token

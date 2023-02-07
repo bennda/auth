@@ -1,12 +1,4 @@
-﻿namespace DBN.Auth.Auth0;
-
-public class TokenResponse
-{
-    [DataMember(IsRequired = false)]
-    public Token? Token { get; set; }
-    public bool IsSuccessful { get; set; }
-    public HttpStatusCode? StatusCode { get; set; }
-}
+﻿namespace DBN.Auth.Auth0.Models;
 
 public enum TokenGrantType
 {

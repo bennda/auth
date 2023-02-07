@@ -1,4 +1,6 @@
-﻿namespace DBN.Auth.Web.Controllers;
+﻿using DBN.Auth.Auth0.Models;
+
+namespace DBN.Auth.Web.Controllers;
 
 public class TokenController : Controller
 {
@@ -6,7 +8,7 @@ public class TokenController : Controller
 
     public TokenController(IHttpClientFactory httpClientFactory)
     {
-        _authService = new Auth0TokenService(httpClientFactory.CreateClient());
+        _authService = AuthFactory.CreateAuth0TokenService(httpClientFactory.CreateClient());
     }
 
     [HttpGet]

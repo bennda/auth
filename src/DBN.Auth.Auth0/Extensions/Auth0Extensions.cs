@@ -29,7 +29,7 @@ public static class Auth0Extensions
 
     public static IServiceCollection AddAuthApp(this IServiceCollection services, string domain, string clientId, string scope, string callbackPath, string callbackHost,
         string[] permissionRoles)
-    {   
+    {
         services.AddAuth0WebAppAuthentication(options =>
         {
             options.Domain = domain;
@@ -41,22 +41,25 @@ public static class Auth0Extensions
             {
                 options.OpenIdConnectEvents = new OpenIdConnectEvents
                 {
-                    OnTokenValidated = (context) => {
-                        foreach (var scope in context.Options.Scope.Where(p => permissionRoles.Contains(p))) {
+                    OnTokenValidated = (context) =>
+                    {
+                        foreach (var scope in context.Options.Scope.Where(p => permissionRoles.Contains(p)))
+                        {
                             (context.Principal?.Identity as ClaimsIdentity)?.AddClaim(new Claim(ClaimTypes.Role.ToString(), scope));
                         }
-                        
+
                         return Task.CompletedTask;
                     },
 
-                    OnRedirectToIdentityProvider = context => {
+                    OnRedirectToIdentityProvider = context =>
+                    {
                         context.ProtocolMessage.RedirectUri = $"{callbackHost}{callbackPath}";
                         return Task.FromResult(0);
                     }
                 };
             }
         });
-        
+
         return services;
     }
 
@@ -73,7 +76,7 @@ public static class Auth0Extensions
             callbackPath: callbackPath,
             callbackHost: callbackHost,
             permissionRoles: permissionRoles);
-        
+
         return services;
     }
 
@@ -86,11 +89,12 @@ public static class Auth0Extensions
             try
             {
                 content = await JsonSerializer.DeserializeAsync<Dictionary<string, string?>>(request.Body);
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return Results.BadRequest();
             }
-            
+
             if (content == null || !content.TryGetValue("grant_type", out string? grantType))
             {
                 return Results.BadRequest();
@@ -114,8 +118,8 @@ public static class Auth0Extensions
                     return Results.BadRequest();
                 }
                 response = await authService.GetToken(TokenParameters.ForClientCredentials(
-                    domain: $"{domain}", 
-                    audience: $"{audience}", 
+                    domain: $"{domain}",
+                    audience: $"{audience}",
                     client: new NetworkCredential(clientId, clientSecret, domain)));
             }
 
@@ -158,7 +162,7 @@ public static class Auth0Extensions
                         user: new NetworkCredential(username, password, domain),
                         scope: $"{scope}"
                         ));
-                    
+
                     break;
                 case "refresh_token":
                     var refreshToken = content.GetValueOrDefault("refresh_token");
@@ -179,9 +183,9 @@ public static class Auth0Extensions
                         return Results.BadRequest();
                     }
                     response = await authService.GetToken(TokenParameters.ForAuthorizationCode(
-                        domain: $"{domain}", 
-                        client: new NetworkCredential(clientId, clientSecret, domain), 
-                        code: code, 
+                        domain: $"{domain}",
+                        client: new NetworkCredential(clientId, clientSecret, domain),
+                        code: code,
                         redirectUri: redirectUri));
                     break;
                 case "client_credentials":

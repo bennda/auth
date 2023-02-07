@@ -1,4 +1,4 @@
-﻿namespace DBN.Auth.Auth0;
+﻿namespace DBN.Auth.Auth0.Handlers;
 
 internal class HasScopeRequirement : IAuthorizationRequirement
 {

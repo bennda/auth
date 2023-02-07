@@ -14,17 +14,17 @@
 
             @switch (Model.GrantType)
             {
-                case GrantType.ClientCredentials:
+                case TokenGrantType.ClientCredentials:
                     <partial name="_GrantTypeClientCredentialsPartial" model="@Model as TokenViewModelClientCredentials" />
                     break;
-                case GrantType.Password:
+                case TokenGrantType.Password:
                     <partial name="_GrantTypePasswordPartial" model="@Model as TokenViewModelPassword" />
                     break;
-                case GrantType.RefreshToken:
+                case TokenGrantType.RefreshToken:
                     <partial name="_GrantTypeRefreshTokenPartial" model="@Model as TokenViewModelRefreshToken" />
                     break;
-                case GrantType.AuthenticationCode:
-                    <partial name="_GrantTypeAuthenticationCodePartial" model="@Model as TokenViewModelAuthorizationCode" />
+                case TokenGrantType.AuthorizationCode:
+                    <partial name="_GrantTypeAuthorizationCodePartial" model="@Model as TokenViewModelAuthorizationCode" />
                     break;
                 default:
                     break;
