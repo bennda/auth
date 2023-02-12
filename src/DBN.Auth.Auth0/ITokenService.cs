@@ -4,5 +4,5 @@ namespace DBN.Auth.Auth0;
 
 public interface ITokenService
 {
-    Task<TokenResponse?> GetToken(TokenParameters parameters);
+    Task<TokenResponse> GetToken(TokenParameters parameters);
 }

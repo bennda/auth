@@ -2,24 +2,32 @@
 
 public static class Auth0Extensions
 {
-    public static IServiceCollection AddAuthApi(this IServiceCollection services, string domain, string audience)
+    public static IServiceCollection AddAuthApi(this IServiceCollection services, AuthApiParameters parameters)
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, c =>
             {
-                c.Authority = $"https://{domain}";
+                c.Authority = $"https://{parameters.Domain}";
                 c.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidAudience = audience,
-                    ValidIssuer = domain
+                    ValidAudience = parameters.Audience,
+                    ValidIssuer = parameters.Domain
                 };
             });
         services.AddAuthorization(o =>
         {
-            o.AddPolicy("read:data", p => p
-                .RequireAuthenticatedUser()
-                .Requirements.Add(new HasScopeRequirement("read:data", $"https://{domain}/"))
-                );
+            if (parameters.AuthorizationPolicies != null)
+            {
+                foreach (var policy in parameters.AuthorizationPolicies)
+                {
+                    foreach (var claim in policy.Claims)
+                    {
+                        o.AddPolicy(policy.Name, p => p
+                            .RequireAuthenticatedUser()
+                            .Requirements.Add(new HasScopeRequirement(claim, $"https://{parameters.Domain}/")));
+                    }
+                }
+            }
         });
 
         services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
@@ -27,25 +35,47 @@ public static class Auth0Extensions
         return services;
     }
 
-    public static IServiceCollection AddAuthApp(this IServiceCollection services, string domain, string clientId, string scope, string callbackPath, string callbackHost,
-        string[] permissionRoles)
+    public static IServiceCollection AddAuthApp(this IServiceCollection services, AuthAppParameters parameters)
     {
+        services.Configure<CookiePolicyOptions>(options =>
+        {
+            options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+            options.OnAppendCookie = (context) =>
+            {
+                if (context.CookieOptions.SameSite == SameSiteMode.None && context.CookieOptions.Secure)
+                {
+                    context.CookieOptions.SameSite = SameSiteMode.Unspecified;
+                }
+            };
+            options.OnDeleteCookie = (context) =>
+            {
+                if (context.CookieOptions.SameSite == SameSiteMode.None && context.CookieOptions.Secure)
+                {
+                    context.CookieOptions.SameSite = SameSiteMode.Unspecified;
+                }
+            };
+            options.CheckConsentNeeded = contenxt => true;
+        });
+
         services.AddAuth0WebAppAuthentication(options =>
         {
-            options.Domain = domain;
-            options.ClientId = clientId;
-            options.CallbackPath = callbackPath;
-            options.Scope = scope;
+            options.Domain = $"{parameters.Domain}";
+            options.ClientId = $"{parameters.ClientId}";
+            options.CallbackPath = $"{parameters.CallbackPath}";
+            options.Scope = $"{parameters.Scope}";
 
-            if (!string.IsNullOrEmpty(callbackHost))
+            if (!string.IsNullOrEmpty(parameters.CallbackHost))
             {
                 options.OpenIdConnectEvents = new OpenIdConnectEvents
                 {
                     OnTokenValidated = (context) =>
                     {
-                        foreach (var scope in context.Options.Scope.Where(p => permissionRoles.Contains(p)))
+                        if (parameters.PermissionRoles != null)
                         {
-                            (context.Principal?.Identity as ClaimsIdentity)?.AddClaim(new Claim(ClaimTypes.Role.ToString(), scope));
+                            foreach (var scope in context.Options.Scope.Where(p => parameters.PermissionRoles.Contains(p)))
+                            {
+                                (context.Principal?.Identity as ClaimsIdentity)?.AddClaim(new Claim(ClaimTypes.Role.ToString(), scope));
+                            }
                         }
 
                         return Task.CompletedTask;
@@ -53,36 +83,36 @@ public static class Auth0Extensions
 
                     OnRedirectToIdentityProvider = context =>
                     {
-                        context.ProtocolMessage.RedirectUri = $"{callbackHost}{callbackPath}";
+                        context.ProtocolMessage.RedirectUri = $"{parameters.CallbackHost}{parameters.CallbackPath}";
                         return Task.FromResult(0);
                     }
                 };
             }
         });
 
-        return services;
-    }
-
-    public static IServiceCollection AddAuth(this IServiceCollection services, string domain, string audience, string scope, string clientId, string callbackPath, string callbackHost, string[] permissionRoles)
-    {
-        services.AddAuthApi(
-            domain: domain,
-            audience: audience);
-
-        services.AddAuthApp(
-            domain: domain,
-            clientId: clientId,
-            scope: scope,
-            callbackPath: callbackPath,
-            callbackHost: callbackHost,
-            permissionRoles: permissionRoles);
+        services.ConfigureSameSiteNoneCookies();
 
         return services;
     }
 
-    public static IApplicationBuilder UseAuthApi(this WebApplication app, string auth0Domain, string auth0Audience, NetworkCredential client, string route = "/token")
+    public static IServiceCollection AddAuth(this IServiceCollection services, AuthApiParameters apiParameters, AuthAppParameters appParameters)
     {
-        Delegate handler = async (HttpRequest request, ITokenService authService) =>
+        services.AddAuthApi(apiParameters);
+        services.AddAuthApp(appParameters);
+        return services;
+    }
+
+
+    public static IApplicationBuilder UseAuth(this WebApplication app, string auth0Domain, string auth0Audience, NetworkCredential client, string route = "/auth")
+    {
+        app.UseAuthApi(auth0Domain, auth0Audience, client, route);
+        app.UseAuthApp();
+        return app;
+    }
+
+    public static IApplicationBuilder UseAuthApi(this WebApplication app, string auth0Domain, string auth0Audience, NetworkCredential client, string route = "/auth")
+    {
+        var handler = async (HttpRequest request, ITokenService authService) =>
         {
             Dictionary<string, string?>? content = null;
 
@@ -198,8 +228,76 @@ public static class Auth0Extensions
                 ? Results.Ok(response.Token)
                 : Results.Unauthorized();
         };
+        
         app.MapPost(route, handler);
+
+        app.MapGet(route, () =>
+        {
+            return Results.Ok("hello");
+        });
 
         return app;
     }
+
+    public static IApplicationBuilder UseAuthApp(this WebApplication app)
+    {
+        app.UseCookiePolicy();
+        return app;
+    }
+}
+
+public class AuthApiParameters
+{
+    public string Domain { get; set; }
+    public string Audience { get; set; }
+    public Type TokenServiceType { get; set; } = typeof(Auth0TokenService);
+    public IEnumerable<AuthPolicyParameter> AuthorizationPolicies { get; }
+
+    public AuthApiParameters(string domain, string audience, IEnumerable<AuthPolicyParameter>? authorizationPolicies = null)
+    {
+        Domain = domain;
+        Audience = audience;
+        AuthorizationPolicies = authorizationPolicies ?? Array.Empty<AuthPolicyParameter>();
+    }
+    public AuthApiParameters(string domain, string audience, AuthPolicyParameter authorizationPolicy)
+        : this(domain, audience, new AuthPolicyParameter[] { authorizationPolicy })
+    {
+    }
+}
+
+public class AuthPolicyParameter
+{
+    public AuthPolicyParameter(string name, string claim) : this(name, new[] { claim })
+    {
+    }
+    public AuthPolicyParameter(string name, IEnumerable<string> claims)
+    {
+        Name = name;
+        Claims = claims;
+    }
+
+    public string Name { get; }
+    public IEnumerable<string> Claims { get; }
+}
+
+public class AuthAppParameters
+{
+    public AuthAppParameters(string domain, string audience, string clientId, string scope, string callbackPath, string callbackHost, IEnumerable<string> permissionRoles)
+    {
+        Domain = domain;
+        Audience = audience;
+        ClientId = clientId;
+        Scope = scope;
+        CallbackPath = callbackPath;
+        CallbackHost = callbackHost;
+        PermissionRoles = permissionRoles;
+    }
+
+    public string Domain { get; set; }
+    public string Audience { get; set; }
+    public string ClientId { get; set; }
+    public string Scope { get; set; }
+    public string CallbackPath { get; set; }
+    public string CallbackHost { get; set; }
+    public IEnumerable<string> PermissionRoles { get; set; }
 }

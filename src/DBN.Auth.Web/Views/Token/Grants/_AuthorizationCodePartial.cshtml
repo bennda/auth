@@ -1,0 +1,50 @@
+﻿@model TokenRequestAuthorizationCode
+
+@using (Html.BeginForm("Password", "Token", FormMethod.Post))
+{
+    <tr>
+        <td>@Html.LabelFor(m => m.Domain)</td>
+        <td>
+            @Html.TextBoxFor(m => m.Domain)
+            @Html.ValidationMessageFor(m => m.Domain)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.ClientId)</td>
+        <td>
+            @Html.TextBoxFor(m => m.ClientId)
+            @Html.ValidationMessageFor(m => m.ClientId)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.ClientSecret)</td>
+        <td>
+            @Html.PasswordFor(m => m.ClientSecret)
+            @Html.ValidationMessageFor(m => m.ClientSecret)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.RedirectUri)</td>
+        <td>
+            @Html.TextBoxFor(m => m.RedirectUri)
+            @Html.ValidationMessageFor(m => m.RedirectUri)
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(m => m.Code)</td>
+        <td>
+            <div style="display: flex">
+                @Html.TextBoxFor(m => m.Code)
+                @Html.ValidationMessageFor(m => m.Code)
+            </div>
+
+        </td>
+    </tr>
+
+    <tr>
+        <td>@Html.HiddenFor(m => m.GrantType)</td>
+        <td>
+            <input type="submit" name="command" value="get token" />
+        </td>
+    </tr>
+}

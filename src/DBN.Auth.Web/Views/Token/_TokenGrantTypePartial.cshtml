@@ -1,0 +1,11 @@
+﻿@model TokenViewModel
+
+@using (Html.BeginForm("Index", "Token", FormMethod.Post))
+{
+    <tr>
+        <td style="width:20%">@Html.LabelFor(m => m.GrantType)</td>
+        <td>
+            @Html.DropDownListFor(m => m.GrantType, Model.GrantTypes, new { onchange = $"document.location.href = '{@Url.Content("~")}' + this.options[this.selectedIndex].value;" })
+        </td>
+    </tr>
+}

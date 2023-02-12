@@ -4,4 +4,5 @@ public abstract class AuthResponse
 {
     public bool IsSuccessful { get; set; }
     public HttpStatusCode? StatusCode { get; set; }
+    public Exception? Exception { get; set; }
 }

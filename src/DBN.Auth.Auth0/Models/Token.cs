@@ -2,12 +2,16 @@
 
 public enum TokenGrantType
 {
+    [EnumMember(Value = "client_credentials")]
     [JsonPropertyName("client_credentials")]
     ClientCredentials,
+    [EnumMember(Value = "password")]
     [JsonPropertyName("password")]
     Password,
+    [EnumMember(Value = "authorization_code")]
     [JsonPropertyName("authorization_code")]
     AuthorizationCode,
+    [EnumMember(Value = "refresh_token")]
     [JsonPropertyName("refresh_token")]
     RefreshToken
 }
@@ -41,6 +45,6 @@ public class Token
 
     [DisplayName("expires_in")]
     [JsonPropertyName("expires_in")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public int ExpiresIn { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ExpiresIn { get; set; }
 }

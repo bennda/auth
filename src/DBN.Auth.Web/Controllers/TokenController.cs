@@ -1,7 +1,6 @@
-﻿using DBN.Auth.Auth0.Models;
+﻿namespace DBN.Auth.Web.Controllers;
 
-namespace DBN.Auth.Web.Controllers;
-
+[Route("/")]
 public class TokenController : Controller
 {
     private readonly ITokenService _authService;
@@ -12,81 +11,78 @@ public class TokenController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index(string? grantType)
+    [Route("/{type?}")]
+    public async Task<IActionResult> Index(string? type)
     {
-        TokenViewModel? viewModel = null;
-        switch (grantType?.ToLower())
+        return View("Index",await Task.FromResult(Enum.TryParse(type, true, out TokenGrantType grantType)
+            ? TokenViewModel.Create(grantType)
+            : new TokenViewModel()));
+    }
+
+    [HttpPost]
+    [Route("/ClientCredentials")]
+    public async Task<IActionResult> ClientCredentials(TokenRequestClientCredentials request)
+    {
+        if (!ModelState.IsValid)
         {
-            case "client_credentials":
-                viewModel = new TokenViewModelClientCredentials();
-                break;
-            case "password":
-                viewModel = new TokenViewModelPassword();
-                break;
-            case "refresh_token":
-                viewModel = new TokenViewModelRefreshToken();
-                break;
-            case "authorization_code":
-                viewModel = new TokenViewModelAuthorizationCode();
-                break;
-            default:
-                viewModel = new TokenViewModel();
-                break;
+            return View("Index", await Task.FromResult(TokenViewModel.Create(request)));
         }
+        var response = await _authService.GetToken(TokenParameters.ForClientCredentials(
+            domain: $"{request.Domain}",
+            audience: $"{request.Audience}",
+            client: new NetworkCredential(request.ClientId, request.ClientSecret)));
 
-        return View(viewModel);
+        return View("Index", await Task.FromResult(TokenViewModel.Create(request, response)));
     }
 
     [HttpPost]
-    public async Task<IActionResult> ClientCredentials(TokenViewModelClientCredentials viewModel)
+    [Route("/Password")]
+    public async Task<IActionResult> Password(TokenRequestPassword request)
     {
-        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForClientCredentials(
-            domain: $"{viewModel.Domain}",
-            audience: $"{viewModel.Audience}",
-            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret)));
+        if (!ModelState.IsValid)
+        {
+            return View("Index", await Task.FromResult(TokenViewModel.Create(request)));
+        }
+        var response = await _authService.GetToken(TokenParameters.ForPassword(
+            domain: $"{request.Domain}",
+            audience: $"{request.Audience}",
+            user: new NetworkCredential(request.Username, request.Password),
+            client: new NetworkCredential(request.ClientId, request.ClientSecret),
+            scope: $"{request.Scope}"));
 
-        return View("Index", viewModel);
+        return View("Index", await Task.FromResult(TokenViewModel.Create(request, response)));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Password(TokenViewModelPassword viewModel)
+    [Route("/RefreshToken")]
+    public async Task<IActionResult> RefreshToken(TokenRequestRefreshToken request)
     {
-        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForPassword(
-            domain: $"{viewModel.Domain}",
-            audience: $"{viewModel.Audience}",
-            user: new System.Net.NetworkCredential(viewModel.Username, viewModel.Password),
-            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret),
-            scope: $"{viewModel.Scope}"));
+        if (!ModelState.IsValid)
+        {
+            return View("Index", await Task.FromResult(TokenViewModel.Create(request)));
+        }
+        var response = await _authService.GetToken(TokenParameters.ForRefreshToken(
+            domain: $"{request.Domain}",
+            refreshToken: $"{request.RefreshToken}",
+            client: new NetworkCredential(request.ClientId, request.ClientSecret)));
 
-        return View("Index", viewModel);
+        return View("Index", await Task.FromResult(TokenViewModel.Create(request, response)));
     }
 
     [HttpPost]
-    public async Task<IActionResult> RefreshToken(TokenViewModelRefreshToken viewModel)
+    [Route("/AuthorizationCode")]
+    public async Task<IActionResult> AuthorizationCode(TokenRequestAuthorizationCode request)
     {
-        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForRefreshToken(
-            domain: $"{viewModel.Domain}",
-            refreshToken: $"{viewModel.RefreshToken}",
-            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret)));
+        if (!ModelState.IsValid)
+        {
+            return View("Index", await Task.FromResult(TokenViewModel.Create(request)));
+        }
+        var response = await _authService.GetToken(TokenParameters.ForAuthorizationCode(
+            domain: $"{request.Domain}",
+            client: new NetworkCredential(request.ClientId, request.ClientSecret),
+            code: $"{request.Code}",
+            redirectUri: $"{request.RedirectUri}"));
 
-        return View("Index", viewModel);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AuthorizationCode(TokenViewModelAuthorizationCode viewModel)
-    {
-        viewModel.TokenResponse = await _authService.GetToken(TokenParameters.ForAuthorizationCode(
-            domain: $"{viewModel.Domain}",
-            client: new System.Net.NetworkCredential(viewModel.ClientId, viewModel.ClientSecret),
-            code: $"{viewModel.Code}",
-            redirectUri: $"{viewModel.RedirectUri}"));
-
-        return View("Index", viewModel);
-    }
-
-    [HttpPost]
-    public IActionResult Index(TokenViewModel viewModel)
-    {
-        return View(viewModel);
+        return View("Index", await Task.FromResult(TokenViewModel.Create(request, response)));
     }
 }

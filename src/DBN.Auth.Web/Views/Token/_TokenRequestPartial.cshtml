@@ -1,0 +1,20 @@
+﻿@model TokenViewModel
+
+@if (Model.TokenRequest != null)
+{
+    @switch (Model.GrantType)
+    {
+        case TokenGrantType.ClientCredentials:
+            @await Html.PartialAsync("_ClientCredentialsPartial", Model.TokenRequest as TokenRequestClientCredentials)
+            break;
+        case TokenGrantType.Password:
+            @await Html.PartialAsync("_PasswordPartial", Model.TokenRequest as TokenRequestPassword)
+            break;
+        case TokenGrantType.RefreshToken:
+            @await Html.PartialAsync("_RefreshTokenPartial", Model.TokenRequest as TokenRequestRefreshToken)
+            break;
+        case TokenGrantType.AuthorizationCode:
+            @await Html.PartialAsync("_AuthorizationCodePartial", Model.TokenRequest as TokenRequestAuthorizationCode)
+            break;
+    }
+}

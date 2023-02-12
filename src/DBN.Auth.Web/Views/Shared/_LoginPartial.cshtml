@@ -1,0 +1,16 @@
+﻿@using System.Security.Principal
+
+
+@if (User!.Identity!.IsAuthenticated)
+{
+    <div style="display: flex;">
+        <a asp-controller="Account" asp-action="Profile">@User.Identity.Name | </a>
+        <a id="qsLogoutBtn" asp-controller="Account" asp-action="Logout">Logout</a>
+    </div>
+}
+else
+{
+    <div style="display: flex;">
+        <a id="qsLoginBtn" asp-controller="Account" asp-action="Login">Login</a>
+    </div>
+}
