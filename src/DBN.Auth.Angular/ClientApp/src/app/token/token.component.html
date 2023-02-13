@@ -1,0 +1,121 @@
+<section>
+  <div class="content">
+    <header class="major">
+      <h3>Token Request [Auth0]</h3>
+    </header>
+
+
+    <table cellpadding="0" cellspacing="0" style="table-layout:fixed; width:100%">
+      <tr><td style="width:20%; height:0"></td></tr>
+
+      <tr>
+        <td style="width:20%">grant_type</td>
+        <td>
+          <select (change)="selectGrantTypeHandler($event)">
+            <option value=""></option>
+            <option value="client_credentials">client_credentials</option>
+            <option value="password">password</option>
+            <option value="refresh_token">refresh_token</option>
+            <option value="authorization_code">authorization_code</option>
+          </select>
+        </td>
+      </tr>
+
+      <tr *ngIf="request.grant_type != ''">
+        <td>domain</td>
+        <td>
+          <input type="text" [(ngModel)]="request.domain" required />
+        </td>
+      </tr>
+      <tr *ngIf="request.grant_type != ''">
+        <td>client_id</td>
+        <td><input type="text" [(ngModel)]="request.client_id" required /></td>
+      </tr>
+      <tr *ngIf="request.grant_type != ''">
+        <td>client_secret</td>
+        <td><input type="text" [(ngModel)]="request.client_secret" required /></td>
+      </tr>
+
+      <tr *ngIf="request.grant_type === 'client_credentials'">
+        <td>audience</td>
+        <td><input type="text" [(ngModel)]="request.audience" /></td>
+      </tr>
+
+      <tr *ngIf="request.grant_type === 'password'">
+        <td>audience</td>
+        <td><input type="text" [(ngModel)]="request.audience" /></td>
+      </tr>
+      <tr *ngIf="request.grant_type === 'password'">
+        <td>username</td>
+        <td><input type="text" [(ngModel)]="request.username" /></td>
+      </tr>
+      <tr *ngIf="request.grant_type === 'password'">
+        <td>password</td>
+        <td><input type="text" [(ngModel)]="request.password" /></td>
+      </tr>
+      <tr *ngIf="request.grant_type === 'password'">
+        <td>scope</td>
+        <td><input type="text" [(ngModel)]="request.scope" /></td>
+      </tr>
+
+      <tr *ngIf="request.grant_type === 'refresh_token'">
+        <td>refresh_token</td>
+        <td><input type="text" [(ngModel)]="request.refresh_token" /></td>
+      </tr>
+      <tr *ngIf="request.grant_type === 'refresh_token'">
+        <td>redirect_uri</td>
+        <td><input type="text" [(ngModel)]="request.redirect_uri" /></td>
+      </tr>
+
+      <tr *ngIf="request.grant_type === 'authorization_code'">
+        <td>code</td>
+        <td><input type="text" [(ngModel)]="request.code" /></td>
+      </tr>
+
+      <tr *ngIf="request.grant_type != ''">
+        <td></td>
+        <td><input type="submit" (click)="createToken()" value="get token" /></td>
+      </tr>
+
+    </table>
+
+
+    <header class="major" *ngIf="status !== ''">
+      <h3>Token Response [Auth0]</h3>
+    </header>
+
+    <table cellpadding="0" cellspacing="0" style="table-layout:fixed; width:100%" *ngIf="status !== ''">
+      <tr><td style="width:20%; height:0"></td></tr>
+
+      <tr *ngIf="status === 'error'">
+        <td>error</td>
+        <td><input class="e-input" type="text" value="{{ statusText }}" readonly /></td>
+      </tr>
+
+      <tr *ngIf="response.token_type">
+        <td>token_type</td>
+        <td><input class="e-input" type="text" value="{{ response.token_type }}" readonly /></td>
+      </tr>
+      <tr *ngIf="response.access_token">
+        <td>access_token</td>
+        <td><textarea readonly>{{ response.access_token }}</textarea></td>
+      </tr>
+      <tr *ngIf="response.id_token">
+        <td>id_token</td>
+        <td><textarea readonly>{{ response.id_token }}</textarea></td>
+      </tr>
+      <tr *ngIf="response.refresh_token">
+        <td>refresh_token</td>
+        <td><textarea readonly>{{ response.refresh_token }}</textarea></td>
+      </tr>
+      <tr *ngIf="response.scope">
+        <td>scope</td>
+        <td><input class="e-input" type="text" value="{{ response.scope }}" readonly /></td>
+      </tr>
+      <tr *ngIf="response.expires_in !== 0">
+        <td>expires_in</td>
+        <td><input class="e-input" type="text" value="{{ response.expires_in }}" readonly /></td>
+      </tr>
+    </table>
+  </div>
+</section>
