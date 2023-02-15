@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthApi(new AuthApiParameters(
     domain: $"{builder.Configuration["Auth0:Domain"]}",
     audience: $"{builder.Configuration["Auth0:Audience"]}",
-    authorizationPolicy: new AuthPolicyParameter("read:data", "read:data")));
+    authorizationPolicy: new AuthPolicyParameter("read:data", new AuthPolicyClaim("permissions", "read:data"))));
 
 builder.Services.AddControllersWithViews();
 

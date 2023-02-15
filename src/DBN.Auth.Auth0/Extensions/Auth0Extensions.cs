@@ -24,13 +24,13 @@ public static class Auth0Extensions
                     {
                         o.AddPolicy(policy.Name, p => p
                             .RequireAuthenticatedUser()
-                            .Requirements.Add(new HasScopeRequirement(claim, $"https://{parameters.Domain}/")));
+                            .Requirements.Add(new HasClaimRequirement(claim, parameters.Domain)));
                     }
                 }
             }
         });
 
-        services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+        services.AddSingleton<IAuthorizationHandler, HasClaimHandler>();
         services.AddHttpClient<ITokenService, Auth0TokenService>();
         return services;
     }
@@ -228,13 +228,8 @@ public static class Auth0Extensions
                 ? Results.Ok(response.Token)
                 : Results.Unauthorized();
         };
-        
-        app.MapPost(route, handler);
 
-        app.MapGet(route, () =>
-        {
-            return Results.Ok("hello");
-        });
+        app.MapPost(route, handler);
 
         return app;
     }
@@ -244,60 +239,4 @@ public static class Auth0Extensions
         app.UseCookiePolicy();
         return app;
     }
-}
-
-public class AuthApiParameters
-{
-    public string Domain { get; set; }
-    public string Audience { get; set; }
-    public Type TokenServiceType { get; set; } = typeof(Auth0TokenService);
-    public IEnumerable<AuthPolicyParameter> AuthorizationPolicies { get; }
-
-    public AuthApiParameters(string domain, string audience, IEnumerable<AuthPolicyParameter>? authorizationPolicies = null)
-    {
-        Domain = domain;
-        Audience = audience;
-        AuthorizationPolicies = authorizationPolicies ?? Array.Empty<AuthPolicyParameter>();
-    }
-    public AuthApiParameters(string domain, string audience, AuthPolicyParameter authorizationPolicy)
-        : this(domain, audience, new AuthPolicyParameter[] { authorizationPolicy })
-    {
-    }
-}
-
-public class AuthPolicyParameter
-{
-    public AuthPolicyParameter(string name, string claim) : this(name, new[] { claim })
-    {
-    }
-    public AuthPolicyParameter(string name, IEnumerable<string> claims)
-    {
-        Name = name;
-        Claims = claims;
-    }
-
-    public string Name { get; }
-    public IEnumerable<string> Claims { get; }
-}
-
-public class AuthAppParameters
-{
-    public AuthAppParameters(string domain, string audience, string clientId, string scope, string callbackPath, string callbackHost, IEnumerable<string> permissionRoles)
-    {
-        Domain = domain;
-        Audience = audience;
-        ClientId = clientId;
-        Scope = scope;
-        CallbackPath = callbackPath;
-        CallbackHost = callbackHost;
-        PermissionRoles = permissionRoles;
-    }
-
-    public string Domain { get; set; }
-    public string Audience { get; set; }
-    public string ClientId { get; set; }
-    public string Scope { get; set; }
-    public string CallbackPath { get; set; }
-    public string CallbackHost { get; set; }
-    public IEnumerable<string> PermissionRoles { get; set; }
 }

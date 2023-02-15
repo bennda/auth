@@ -5,7 +5,9 @@ builder.Services.AddAuth(
     new AuthApiParameters(
         domain: $"{builder.Configuration["Auth0:Domain"]}",
         audience: $"{builder.Configuration["Auth0:Audience"]}",
-        authorizationPolicy: new AuthPolicyParameter("read:data", "read:data")
+        authorizationPolicy: new AuthPolicyParameter("read:data", new AuthPolicyClaim(
+            type: "permissions",
+            value: "read:data"))
     ),
     new AuthAppParameters(
         domain: $"{builder.Configuration["Auth0:Domain"]}",
